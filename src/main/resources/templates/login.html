@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>钉钉扫码</title>
+</head>
+<script src="https://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
+<body>
+    <div id="login_container"></div>
+</body>
+<script type="text/javascript">
+/*
+* 解释一下goto参数，参考以下例子：
+* var url = encodeURIComponent('http://localhost.me/index.php?test=1&aa=2');
+* var goto = encodeURIComponent('https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=appid&response_type=code&scope=snsapi_login&state=STATE&redirect_uri='+url)
+*/
+var appid = '';
+var url = encodeURIComponent('');
+var gotos = encodeURIComponent('https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=' + appid + '&response_type=code&scope=snsapi_login&redirect_uri=' + url + '&state=STATE')
+var obj = DDLogin({
+    id:"login_container",//这里需要你在自己的页面定义一个HTML标签并设置id，例如<div id="login_container"></div>或<span id="login_container"></span>
+    goto: gotos, //请参考注释里的方式
+    style: "border:none;background-color:#FFFFFF;",
+    width : "365",
+    height: "400"
+});
+var handleMessage = function (event) {
+    var origin = event.origin
+    if (origin === 'https://login.dingtalk.com') {
+        var loginTmpCode = event.data
+        console.log("loginTmpCode:"+loginTmpCode);//9a8a053d3ddf3abd927b070e59ea2630
+        window.location.href = 'https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid='
+            + appid + '&response_type=code&scope=snsapi_login&state=STATE&redirect_uri='
+            + url + '&loginTmpCode=' + loginTmpCode;
+    }
+}
+if (typeof window.addEventListener != 'undefined') {
+    window.addEventListener('message', handleMessage, false)
+} else if (typeof window.attachEvent != 'undefined') {
+    window.attachEvent('onmessage', handleMessage)
+}
+</script>
+</html>
